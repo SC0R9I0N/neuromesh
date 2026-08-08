@@ -1,0 +1,6 @@
+/target
+/dist
+neuromesh.db
+neuromesh.db-journal
+neuromesh.db-wal
+neuromesh.db-shm

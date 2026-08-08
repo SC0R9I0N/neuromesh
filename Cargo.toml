@@ -1,0 +1,27 @@
+[package]
+name = "neuromesh"
+version = "0.1.2"
+edition = "2021"
+description = "Local-first knowledge graph brain: ingest notes, auto-categorize, visualize."
+license = "MIT"
+
+[dependencies]
+# UI layer — native, GPU-accelerated immediate-mode GUI (no browser, no Electron)
+eframe = "0.29"
+egui = "0.29"
+# Storage layer — embedded single-file SQLite
+rusqlite = { version = "0.31", features = ["bundled"] }
+# Native file-open dialogs for the import workflow
+rfd = "0.15"
+# Ergonomic error handling
+anyhow = "1"
+
+[target.'cfg(windows)'.build-dependencies]
+# Embeds assets/icon.ico + version info into the .exe (Explorer/taskbar icon)
+winresource = "0.1"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true

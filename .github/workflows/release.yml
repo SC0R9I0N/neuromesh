@@ -1,0 +1,41 @@
+name: Release
+
+# Push a tag like v0.1.0 to build the Windows installer and attach it
+# (plus the standalone exe) to a GitHub Release.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  windows-installer:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build release binary
+        run: cargo build --release
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}".TrimStart("v")
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /DMyAppVersion=$version installer\neuromesh.iss
+
+      - name: Rename standalone exe
+        shell: pwsh
+        run: Copy-Item target\release\neuromesh.exe dist\neuromesh-portable.exe
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/NeuroMesh-Setup-*.exe
+            dist/neuromesh-portable.exe
+          generate_release_notes: true
